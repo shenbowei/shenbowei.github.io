@@ -1,0 +1,34 @@
+permalink: /:year/:month/:day/:title.html
+paginate: 10
+markdown: kramdown
+
+# 作者信息
+author: 
+  name: Bowei Shen
+  email: shenbowei1991@126.com
+  github: http://github.com/shenbowei
+
+# 站点信息
+title: 告别懒惰
+description: My personal blog
+url: https://yijingping.github.io/
+rss_url: /pages/atom.xml
+
+# gavatar头像及Favicon
+gavatar: /public/img/avatar.jpg
+favicon: /public/img/avatar.jpg
+
+
+# 主题设置，自动激活某个标签
+active: 读书
+
+# 首页除了最新文章外显示分类
+#cates:
+#  - 读书
+
+# 中文本地化
+locals:
+  tags: 标签
+  about: 关于
+  newest: 最新文章
+  archive: 归档
