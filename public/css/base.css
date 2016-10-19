@@ -129,6 +129,7 @@ blockquote p {
 }
 
 /*表格加框*/
+/*
 table{
     border-collapse: collapse;
     border-spacing: 0;
@@ -141,4 +142,35 @@ th{
 
 td{
     border:1px solid #000000;
+}
+*/
+table {
+    margin: 6 auto;
+    border-collapse: collapse;
+}
+tr{
+    background-color: #fff;
+}
+tr:hover>td{
+    background-color: #f3f3f3;
+}
+th, td {
+    padding: 6px 13px;
+    border: 1px solid #ddd;
+}
+th {
+    font-weight: bold;
+}
+
+/*目录toc*/
+#markdown-toc {
+    font-size: 10pt;
+    line-height: 14pt;
+    overflow: auto;
+    border-left: 6px solid #c05b4d ;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+#markdown-toc a{
+    border: none;
 }
