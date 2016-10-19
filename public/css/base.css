@@ -122,6 +122,23 @@ blockquote p {
 }
 /* 显示评论按钮 */
 .show-commend {
-  width: 100%;
-  margin-bottom: 40px;
+  width: 80%;
+  text-align:center;
+  padding:20px;
+  margin:auto;
+}
+
+/*表格加框*/
+table{
+    border-collapse: collapse;
+    border-spacing: 0;
+    border:2px solid #000000;
+}
+
+th{
+    border:2px solid #000000;
+}
+
+td{
+    border:1px solid #000000;
 }

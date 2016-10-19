@@ -1,6 +1,16 @@
 permalink: /:year/:month/:day/:title.html
 paginate: 10
 markdown: kramdown
+kramdown:
+  input: GFM
+  extensions:
+    - autolink
+    - footnotes
+    - smart
+  enable_coderay: true
+  syntax_highlighter: rouge
+ # coderay:
+ #   coderay_line_numbers:  nil
 
 # 作者信息
 author: 
