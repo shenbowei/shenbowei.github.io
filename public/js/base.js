@@ -77,15 +77,17 @@ $(document).ready(function() {
   });
   contentEffects();
 });
+//右边栏目录导航的js代码
 function contentEffects(){
   //remove the asidebar
   $('.row-offcanvas').removeClass('active');
   if($("#nav").length > 0){
-    $("#content > h2,#content > h3,#content > h4,#content > h5,#content > h6").each(function(i) {
+    $("#content > h1,#content > h2,#content > h3,#content > h4,#content > h5,#content > h6").each(function(i) {
         var current = $(this);
-        current.attr("id", "title" + i);
+        //current.attr("id", "title" + i);
+		var id = current.attr("id");
         tag = current.prop('tagName').substr(-1);
-        $("#nav").append("<div style='margin-left:"+15*(tag-1)+"px'><a id='link" + i + "' href='#title" +i + "'>" + current.html() + "</a></div>");
+        $("#nav").append("<div style='margin-left:"+15*(tag-1)+"px'><a id='link" + i + "' href='#" +id + "'>" + current.html() + "</a></div>");
     }); 
     $("pre").addClass("prettyprint");
     prettyPrint(); 
