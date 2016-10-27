@@ -64,7 +64,13 @@ $(document).ready(function() {
       $('#nav_btn').click();
     $('.aside3').scrollTop(0);
     contentEffects();
+	pajx_loadDuodsuo();
+	//pajx_loadMathjax();
+	//下行实现mathjax加载
+	MathJax.Hub.Typeset();
   });
+  
+  /*
   $('body').on('click', '.show-commend', function(){
     var ds_loaded = false;
     window.disqus_shortname = $('.show-commend').attr('name');
@@ -75,6 +81,7 @@ $(document).ready(function() {
       cache: true
     });
   });
+  */
   contentEffects();
 });
 //右边栏目录导航的js代码
@@ -96,4 +103,27 @@ function contentEffects(){
   }else{
     $('#content_btn').hide();
   }
+}
+
+//多说加载
+function pajx_loadDuodsuo(){
+	var dus=$(".ds-thread");
+	if($(dus).length==1){
+		var el = document.createElement('div');
+		el.setAttribute('data-thread-key',$(dus).attr("data-thread-key"));//必选参数
+		el.setAttribute('data-url',$(dus).attr("data-url"));
+		DUOSHUO.EmbedThread(el);
+		$(dus).html(el);
+	}
+}
+//mathjax加载
+function pajx_loadMathjax(){
+	var script = document.createElement("script");
+	script.type = "text/javascript";
+	script.src = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"; 
+	var config = 'MathJax.Hub.Config({ config: "MathJax.js" }); ' +
+	'MathJax.Hub.Startup.onload();';
+	if (window.opera) {script.innerHTML = config}
+	else {script.text = config}
+	document.getElementsByTagName("head")[0].appendChild(script);
 }
