@@ -1071,6 +1071,100 @@ like displaying BLOB-data as image or download-link and much more...
 
 ![phpmyadmin](/public/img/php/phpmyadmin.png "phpmyadmin")
 
+### 配置 PHP config
+
+`PHP`的配置文件为`/etc/php.ini`。里面每一项都有英文注释，可以参考英文注释配置。
+
+### 配置 PHP with Nginx
+
+> Nginx本身不能处理PHP，当接收到请求后，如果是PHP请求，则发给PHP解释器处理，并把结果返回给客户端。
+> Nginx一般是把请求发FastCGI管理进程处理，FastCGI管理进程选择cgi子进程处理结果并返回被Nginx。
+> 也可以让Nginx作反向代理服务器，将PHP请求转发给Apache服务器解析后将结果返回给客户端。
+
+> PHP-FPM是一个PHP FastCGI管理器，是只用于PHP的。
+> PHP-FPM其实是PHP源代码的一个补丁，旨在将FastCGI进程管理整合进PHP包中。必须将它patch到你的PHP源代码中，在编译安装PHP后才可以使用。
+> 新版PHP已经集成PHP-FPM了，不再是第三方的包了，推荐使用。PHP-FPM提供了更好的PHP进程管理方式，可以有效控制内存和进程、可以平滑重载PHP配置，比spawn-fcgi具有更多优点，所以被PHP官方收录了。
+
+首先安装PHP-FPM
+
+```
+[root@localhost conf.d]# sudo yum install php-fpm
+已加载插件：fastestmirror, langpacks
+base                                                     | 3.6 kB     00:00     
+extras                                                   | 3.4 kB     00:00     
+nginx                                                    | 2.9 kB     00:03     
+updates                                                  | 3.4 kB     00:00     
+Loading mirror speeds from cached hostfile
+ * base: mirrors.btte.net
+ * epel: mirrors.tuna.tsinghua.edu.cn
+ * extras: mirrors.tuna.tsinghua.edu.cn
+ * updates: mirrors.tuna.tsinghua.edu.cn
+正在解决依赖关系
+--> 正在检查事务
+---> 软件包 php-fpm.x86_64.0.5.4.16-36.3.el7_2 将被 安装
+--> 解决依赖关系完成
+
+依赖关系解决
+
+================================================================================
+ Package         架构           版本                      源               大小
+================================================================================
+正在安装:
+ php-fpm         x86_64         5.4.16-36.3.el7_2         updates         1.4 M
+
+事务概要
+================================================================================
+安装  1 软件包
+
+总下载量：1.4 M
+安装大小：4.5 M
+Is this ok [y/d/N]: y
+Downloading packages:
+php-fpm-5.4.16-36.3.el7_2.x86_64.rpm                       | 1.4 MB   00:00     
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  正在安装    : php-fpm-5.4.16-36.3.el7_2.x86_64                            1/1 
+  验证中      : php-fpm-5.4.16-36.3.el7_2.x86_64                            1/1 
+
+已安装:
+  php-fpm.x86_64 0:5.4.16-36.3.el7_2                                            
+
+完毕！
+```
+
+`PHP-FPM`的配置文件为`/etc/php-fpm.conf`。
+使用`systemctl start php-fpm`启动。
+
+修改nginx的配置文件`vim /etc/nginx/conf.d/default.conf`，取消`#pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000`下面的代码注释，并修改`/scripts`为`$document_root`：
+
+```
+location ~ \.php$ {
+	#root           html;
+	fastcgi_pass   127.0.0.1:9000;
+	fastcgi_index  index.php;
+	fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+	include        fastcgi_params;
+}
+```
+
+之后重启`Nginx`服务器，即可访问`php`页面。
+
+**注意：如果改为$document_root$fastcgi_script_name后依然报file not found错误，应该是$document_root为空导致，需要配置root变量（注意并不能在 location / 中配置，而应该在server段下配置）**
+
+```
+root   /usr/share/nginx/html;
+```
+
+**当然也可以把 'location ~ \.php' 段中的root定义下或者直接修改SCRIPT_FILENAME为：**
+
+```
+fastcgi_param  SCRIPT_FILENAME  /usr/share/nginx/html/$fastcgi_script_name;
+```
+
+总而言之`$document_root`指向本段`location`中的`root`所定义值，如果未在本段定义，则为server下的`root`。
+
 > ## 参考文献
 >
 >[rpm命令参数详解](http://www.cnblogs.com/xxpal/articles/816692.html "跳转")
@@ -1092,5 +1186,7 @@ like displaying BLOB-data as image or download-link and much more...
 >[CentOS 7.0: 安装Apache+MariaDB+PHP](http://jingyan.baidu.com/article/5552ef47d98d91518ffbc9b7.html "跳转")
 >
 >[centos7安装Lnmp(Linux+Nginx+MySql+Php)及Apache](http://www.511yj.com/centos7-lnmp-php.html "跳转")
+>
+>[CentOS 7 安裝 Nginx、PHP7、PHP-FPM](http://www.blogjava.net/Alpha/archive/2016/08/10/431515.html "跳转")
 
 
