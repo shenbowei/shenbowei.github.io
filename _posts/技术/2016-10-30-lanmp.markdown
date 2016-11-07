@@ -670,6 +670,7 @@ systemctl enable nginx.service
 取消Nginx开机启动 
 systemctl disable nginx.service
 ```
+
 ## MariaDB 安装及配置
 
 centos 7 中默认是使用`MariaDB`数据库（替代了`Mysql`），因此直接使用`yum`是无法安装`Mysql`的。
