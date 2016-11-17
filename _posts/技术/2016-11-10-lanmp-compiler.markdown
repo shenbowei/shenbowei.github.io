@@ -787,11 +787,175 @@ sudo /usr/local/apache2/bin/apachectl -k restart
 
 ## 编译安装 Nginx
 
-To be continued...
+下载并解压官网最新的源码包：
+
+```
+wget http://219.239.26.14/files/321500000944715A/nginx.org/download/nginx-1.10.2.tar.gz
+tar -zxf nginx-1.10.2.tar.gz
+```
+
+进入解压后的`nginx-1.10.2`目录，可以通过命令`./configure --help`查看配置的帮助信息。
+因为编译`nginx`中需要的`pcre`和`zlib`在之前编译`apache`时已经编译、安装过了，所以可以直接编译`nginx`:
+
+```
+./configure --prefix=/usr/local/nginx --conf-path=/etc/nginx/nginx.conf --with-pcre=/home/shebnowei/apache/pcre-8.39
+```
+
+**注意：--with-pcre= 应该配置的是pcre的源码目录(/home/shebnowei/apache/pcre-8.39)，而不是安装路径(/usr/local/pcre-8.39)！和apache是不同的。**
+
+之后执行`make`和`make install`即可。
+查看安装目录：
+
+```
+[shebnowei@localhost nginx-1.10.2]$ cd /usr/local/nginx/
+[shebnowei@localhost nginx]$ ls
+html  logs  sbin
+[shebnowei@localhost nginx]$ cd sbin/
+[shebnowei@localhost sbin]$ ls
+nginx  nginx.old
+[shebnowei@localhost sbin]$ sudo ./nginx
+[shebnowei@localhost sbin]$ ls /etc/nginx
+conf.d                  koi-win             scgi_params.default
+fastcgi.conf            mime.types          uwsgi_params
+fastcgi.conf.default    mime.types.default  uwsgi_params.default
+fastcgi_params          nginx.conf          win-utf
+fastcgi_params.default  nginx.conf.default
+koi-utf                 scgi_params
+```
+
+启动文件为`/usr/local/nginx/sbin/nginx`，相关指令为：
+
+```
+启动nginx
+sudo /usr/local/nginx/sbin/nginx
+关闭nginx
+sudo /usr/local/nginx/sbin/nginx -s stop
+```
 
 ## 编译安装 MariaDB
 
+### 准备工作
+
+编译安装`MariaDB`需要`cmake`和`ncurses`，`openssl`可选：
+
+```
+sudo yum install ncurses-devel openssl-devel openssl cmake
+```
+
+为了方便管理`mariadb`,添加专门的用户组`mysql`和用户`mysql`：
+
+```
+groupadd mysql
+useradd -g mysql mysql
+```
+
+如果已经存在，请忽略：
+
+```
+[shebnowei@localhost mariadb-10.1.19]$ id mysql
+uid=27(mysql) gid=27(mysql) 组=27(mysql)
+```
+
+创建数据库数据存放目录：
+
+```
+mkdir -pv /data/mydata
+```
+
+### 编译安装
+
+首先，我们下载最新的源码：
+
+```
+wget http://mirrors.tuna.tsinghua.edu.cn/mariadb//mariadb-10.1.19/source/mariadb-10.1.19.tar.gz
+```
+
+之后解压，进入解压目录，执行`cmake`命令：
+
+```
+cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DMYSQL_DATADIR=/data/mydata -DSYSCONFDIR=/etc -DWITH_INNOBASE_STORAGE_ENGINE=1 -DWITH_ARCHIVE_STORAGE_ENGINE=1 -DWITH_BLACKHOLE_STORAGE_ENGINE=1 -DWITH_READLINE=1 -DWITH_SSL=system -DWITH_ZLIB=system -DWITH_LIBWRAP=0 -DMYSQL_UNIX_ADDR=/tmp/mysql.sock -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DWITHOUT_TOKUDB=1
+```
+**注意：对于gcc 4.8版本的编译器，是支持c++11的，但是对于mariadb的tokudb引擎貌似存在支持问题，据说需要更新到4.9版本以上（没有亲测），这里通过参数-DWITHOUT_TOKUDB=1来禁止安装tokudb引擎**
+**tokudb的相关错误信息为：**
+
+```
+CMake Error at storage/tokudb/PerconaFT/cmake_modules/TokuSetupCompiler.cmake:177(message):
+  /usr/bin/c++ doesn't support -std=c++11 or -std=c++0x, you need one that does.
+```
+
+上述配置过程如果没有问题，就可以执行`make`和`make install`进行编译安装了。
+编译过程比较漫长，大概需要40-50分钟（和机器配置相关）。
+
+在源码目录的`support-files`文件夹中提供了相关的配置文件和服务文件：
+
+```
+[shebnowei@localhost support-files]$ ls
+binary-configure        mariadb.pc.in              mysql-log-rotate
+binary-configure.sh     mariadb.service.in         mysql-log-rotate.sh
+build-tags              mariadb@.service.in        mysql.m4
+ccfilter                my-huge.cnf                mysql-multi.server.sh
+CMakeFiles              my-huge.cnf.sh             mysql.server
+cmake_install.cmake     my-innodb-heavy-4G.cnf     mysql.server.sh
+CMakeLists.txt          my-innodb-heavy-4G.cnf.sh  mysql.server-sys5.sh
+compiler_warnings.supp  my-large.cnf               policy
+CTestTestfile.cmake     my-large.cnf.sh            rpm
+db.opt                  my-medium.cnf              use_galera_new_cluster.conf
+dtrace                  my-medium.cnf.sh           wsrep.cnf
+MacOSX                  my-small.cnf               wsrep.cnf.sh
+magic                   my-small.cnf.sh            wsrep_notify
+Makefile                mysqld_multi.server        wsrep_notify.sh
+mariadb.pc              mysqld_multi.server.sh
+```
+
+然后拷贝配置文件为`/etc/my.cnf`：
+
+```
+[shebnowei@localhost support-files]$ sudo cp my-medium.cnf /etc/my.cnf
+```
+
+并修改里面的内容，添加`datadir = /data/mydata`到`[mysqld]`配置块下。
+
+### 配置启动脚本
+
+同样将`support-files`文件夹中的`mysql.server`拷贝为`/etc/init.d/mysqld`:
+
+```
+sudo cp mysql.server /etc/init.d/mysqld
+```
+
+最后我们需要创建初始化数据库：
+
+```
+cd /usr/local/mysql/scripts/
+sudo ./mysql_install_db --user=mysql --basedir=/usr/local/mysql/ --datadir=/data/mydata/
+```
+
+初始化数据库之后，我们会发现`/data/mydata/`下会生成一些文件：
+
+```
+[shebnowei@localhost scripts]$ ls /data/mydata/
+aria_log.00000001          localhost.localdomain.pid  mysql-bin.000004
+aria_log_control           multi-master.info          mysql-bin.000005
+ibdata1                    mysql                      mysql-bin.index
+ib_logfile0                mysql-bin.000001           performance_schema
+ib_logfile1                mysql-bin.000002
+localhost.localdomain.err  mysql-bin.000003
+```
+
+最终我们可以通过`/etc/init.d/mysqld`脚本启动、终止和查看`mysql`数据库：
+
+```
+[shebnowei@localhost scripts]$ sudo /etc/init.d/mysqld status
+ SUCCESS! MySQL running (89890)
+[shebnowei@localhost scripts]$ sudo /etc/init.d/mysqld stop
+Stopping mysqld (via systemctl):                           [  确定  ]
+[shebnowei@localhost scripts]$ sudo /etc/init.d/mysqld start
+Starting mysqld (via systemctl):                           [  确定  ]
+```
+
 ## 编译安装 PHP
+
+To be continued...
 
 > ## 参考文献
 >
@@ -799,8 +963,11 @@ To be continued...
 >
 >[CentOS7 下编译安装Apache http server](http://www.jianshu.com/p/949350cae1c8 "跳转")
 >
+>[Centos7 从零编译Nginx+PHP+MySql](http://www.cnblogs.com/project/p/5095146.html "跳转")
 >
-
+>[编译安装MariaDB-10.0.21](http://www.cnblogs.com/daixiang/p/5431639.html "跳转")
+>
+>
 
 
 
