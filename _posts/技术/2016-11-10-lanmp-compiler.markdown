@@ -875,7 +875,7 @@ wget http://mirrors.tuna.tsinghua.edu.cn/mariadb//mariadb-10.1.19/source/mariadb
 ```
 cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DMYSQL_DATADIR=/data/mydata -DSYSCONFDIR=/etc -DWITH_INNOBASE_STORAGE_ENGINE=1 -DWITH_ARCHIVE_STORAGE_ENGINE=1 -DWITH_BLACKHOLE_STORAGE_ENGINE=1 -DWITH_READLINE=1 -DWITH_SSL=system -DWITH_ZLIB=system -DWITH_LIBWRAP=0 -DMYSQL_UNIX_ADDR=/tmp/mysql.sock -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DWITHOUT_TOKUDB=1
 ```
-**注意：对于gcc 4.8版本的编译器，是支持c++11的，但是对于mariadb的tokudb引擎貌似存在支持问题，据说需要更新到4.9版本以上（没有亲测），这里通过参数-DWITHOUT_TOKUDB=1来禁止安装tokudb引擎**
+**注意：对于gcc 4.8版本的编译器，是支持c++11的，但是对于mariadb的tokudb引擎貌似存在支持问题，据说需要更新到4.9版本以上（没有亲测），这里通过参数-DWITHOUT_TOKUDB=1来禁止安装tokudb引擎。**
 **tokudb的相关错误信息为：**
 
 ```
@@ -955,7 +955,197 @@ Starting mysqld (via systemctl):                           [  确定  ]
 
 ## 编译安装 PHP
 
-To be continued...
+### 准备工作
+
+编译`php`前，需要先编译安装下`libxml2`、`libmcrypt`和`gd2`（`gd2`需要`freetype`、`libpng`和`jpegsrc`）等软件包。
+
+- libxml2编译安装
+
+```
+wget http://124.202.164.4/files/121200000913906C/fossies.org/linux/www/libxml2-2.9.4.tar.gz
+tar -zxf libxml2-2.9.4.tar.gz
+cd libxml2-2.9.4/
+./configure --prefix=/usr/local/libxml2/
+make 
+sudo make install
+```
+
+**注意：在编译过程中如果提示找不到\<Python.h\>，需要安装一下python-devel，执行命令yum install python-devel。**
+安装完成后，会在`/usr/local/libxml2/`下生成如下目录：
+
+```
+[shebnowei@localhost libxml2-2.9.4]$ ls /usr/local/libxml2/
+bin  include  lib  share
+```
+
+- libmcrypt编译安装
+
+```
+wget http://124.202.164.16/files/3174000001A3B7A7/admin.ooopic.com/soft/linux/libmcrypt-2.5.8.tar.gz
+tar -zxf libmcrypt-2.5.8.tar.gz 
+cd libmcrypt-2.5.8/
+./configure --prefix=/usr/local/libmcrypt/
+make 
+sudo make install
+
+cd libltdl/
+./configure --enable-ltdl-install
+make
+sudo make install
+```
+
+安装完成后，会在`/usr/local/libmcrypt/`下生成如下目录：
+
+```
+[shebnowei@localhost libltdl]$ ls /usr/local/libmcrypt/
+bin  include  lib  man  share
+```
+
+- freetype编译安装
+
+```
+wget http://jaist.dl.sourceforge.net/project/freetype/freetype2/2.7/freetype-2.7.tar.gz
+tar -zxf freetype-2.7.tar.gz
+cd freetype-2.7/
+./configure --prefix=/usr/local/freetype/
+make
+sudo make install
+```
+
+安装完成后，会在`/usr/local/freetype/`下生成如下目录：
+
+```
+[shebnowei@localhost freetype-2.7]$ ls /usr/local/freetype/
+bin  include  lib  share
+```
+
+- libpng编译安装
+
+```
+wget http://219.239.26.9/files/207200000954C14F/jaist.dl.sourceforge.net/project/libpng/libpng16/1.6.26/libpng-1.6.26.tar.gz
+tar -zxf libpng-1.6.26.tar.gz
+cd libpng-1.6.26/
+./configure --prefix=/usr/local/libpng/
+make
+sudo make install
+```
+
+安装完成后，会在`/usr/local/libpng/`下生成如下目录：
+
+```
+[shebnowei@localhost libpng-1.6.26]$ ls /usr/local/libpng/
+bin  include  lib  share
+```
+
+- jpegsrc编译安装
+
+```
+wget http://219.238.7.66/files/4029000007B700B5/www.ijg.org/files/jpegsrc.v9b.tar.gz
+tar -zxf jpegsrc.v9b.tar.gz 
+cd jpeg-9b/
+./configure --prefix=/usr/local/jpeg9/ --enable-shared --enable-static
+make
+sudo make install
+```
+
+安装完成后，会在`/usr/local/jpeg9/`下生成如下目录：
+
+```
+[shebnowei@localhost jpeg-9b]$ ls /usr/local/jpeg9/
+bin  include  lib  share
+```
+
+- gd编译安装
+
+```
+wget https://bitbucket.org/libgd/gd-libgd/downloads/libgd-2.1.1.tar.gz
+tar -zxf libgd-2.1.1.tar.gz
+cd libgd-2.1.1/
+./configure --prefix=/usr/local/gd2/ --with-jpeg=/usr/local/jpeg9/ --with-freetype=/usr/local/freetype/ --with-png=/usr/local/libpng/
+make
+sudo make install
+```
+
+安装完成后，会在`/usr/local/gd2/`下生成如下目录：
+
+```
+[shebnowei@localhost libgd-2.1.1]$ ls /usr/local/gd2/
+bin  include  lib
+```
+
+### 编译安装
+
+推荐编译安装前先看看官方文档：[PHP 手册](http://php.net/manual/zh/install.php "跳转")。
+
+从官方镜像下载`php`的源码包后解压：
+
+```
+wget http://219.239.26.11/files/22540000096535CD/ca1.php.net/distributions/php-5.6.28.tar.gz
+tar -zxf php-5.6.28.tar.gz 
+```
+
+之后进入解压目录，配置`php`:
+
+```
+./configure --prefix=/usr/local/php/ --with-config-file-path=/usr/local/php/etc/ --with-apxs2=/usr/local/apache2/bin/apxs --with-mysql=/usr/local/mysql/ --with-mysqli=/usr/local/mysql/bin/mysql_config --with-libxml-dir=/usr/local/libxml2/ --with-mcrypt=/usr/local/libmcrypt/ --with-jpeg-dir=/usr/local/jpeg9/ --with-png-dir=/usr/local/libpng/ --with-freetype-dir=/usr/local/freetype/ --with-gd=/usr/local/gd2/ --enable-soap --enable-mbstring=all --enable-sockets --enable-fpm --with-xpm-dir=/usr/lib64/（这个参数查看后边的错误解决）
+```
+
+**如果编译时出现如下错误：**
+
+**注意：/home/shebnowei/php/php-5.6.28/ext/gd/gd.c:57:22: 致命错误：X11/xpm.h：没有那个文件或目录 # include <X11/xpm.h>**
+
+**解决：**
+
+- **首先yum install libXpm-devel安装缺少的库。**
+- **之后重新编译安装一下gd库。**
+- **最后在php的配置阶段添加参数--with-xpm-dir=/usr/lib64/（libXpm安装路径）。**
+**rpm -ql libXpm可以查看libXpm安装路径。**
+
+
+配置成功后，即可进行编译安装，即执行`make`和`sudo make install`。安装完成后，可以查看安装目录：
+
+```
+[shebnowei@localhost php-5.6.28]$ ls /usr/local/php/
+bin  etc  include  lib  php  sbin  var
+[shebnowei@localhost php-5.6.28]$ ls /usr/local/php/etc
+pear.conf  php-fpm.conf.default
+```
+
+需要将源目录中的配置文件拷贝到配置目录，同时将`php-fpm`的配置文件重命名下：
+
+```
+cp php.ini-development /usr/local/php/etc/php.ini
+cd /usr/local/php/etc/
+sudo cp php-fpm.conf.default php-fpm.conf
+```
+
+查看配置文件目录`/usr/local/php/etc/`：
+
+```
+[shebnowei@localhost etc]$ ls
+pear.conf  php-fpm.conf  php-fpm.conf.default  php.ini
+```
+
+启动`php-fpm`:
+
+```
+sudo /usr/local/php/sbin/php-fpm
+```
+
+## 整合
+
+为了让`Apache`把`.php`或`.phtml`后缀名解析为`PHP`。需要在配置文件中进行设置：
+
+在`Apache`的配置文件`/etc/httpd/httpd.conf`中找到`AddType application/x-gzip .gz .tgz`指令，
+下边添加一行指令：
+
+```
+AddType application/x-httpd-php .php .phtml
+```
+
+之后重启`Apache`服务即可。
+
+关于整合`nginx`和`php`，可以参考[centos 7下配置Apache+Nginx+PHP+MariaDB环境--安装配置篇](https://shenbowei.github.io/2016/10/30/lanmp.html#php-with-nginx "跳转")。
 
 > ## 参考文献
 >
@@ -967,8 +1157,11 @@ To be continued...
 >
 >[编译安装MariaDB-10.0.21](http://www.cnblogs.com/daixiang/p/5431639.html "跳转")
 >
+>[PHP 手册](http://php.net/manual/zh/install.php "跳转")
 >
-
+>[Centos7+Apache2.4+php5.6+mysql5.5搭建Lamp环境](http://www.cnblogs.com/AIThink/p/5540866.html "跳转")
+>
+>[error: X11/xpm.h: No such file or directory 解决](http://blog.csdn.net/weixiaodahuaidan/article/details/48682901 "跳转")
 
 
 
