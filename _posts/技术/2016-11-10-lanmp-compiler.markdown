@@ -1132,6 +1132,33 @@ pear.conf  php-fpm.conf  php-fpm.conf.default  php.ini
 sudo /usr/local/php/sbin/php-fpm
 ```
 
+### 配置环境变量
+
+为了可以直接使用`php`命令，需要添加`bin`目录到`$PATH`
+
+```
+sudo vim /etc/profile
+```
+
+在结尾添加：
+
+```
+## PHP
+export PATH="/usr/local/php/bin:$PATH"
+```
+
+保存后执行`source /etc/profile`后查看：
+
+```
+[shebnowei@localhost composer]$ source /etc/profile
+[shebnowei@localhost composer]$ echo $PATH
+/usr/local/php/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/java/jdk1.8.0_112/bin:/usr/java/jdk1.8.0_112/jre/bin:/home/shebnowei/.local/bin:/home/shebnowei/bin:/usr/java/jdk1.8.0_112/bin:/usr/java/jdk1.8.0_112/jre/bin
+[shebnowei@localhost composer]$ php -v
+PHP 5.6.28 (cli) (built: Nov 18 2016 19:59:10) 
+Copyright (c) 1997-2016 The PHP Group
+Zend Engine v2.6.0, Copyright (c) 1998-2016 Zend Technologies
+```
+
 ## 整合
 
 为了让`Apache`把`.php`或`.phtml`后缀名解析为`PHP`。需要在配置文件中进行设置：

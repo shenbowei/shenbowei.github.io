@@ -1,0 +1,482 @@
+---
+layout: post
+title: Composer 笔记 -- 入门篇
+category: 技术
+author: 沈伯伟
+tags: Composer
+---
+
+## 关于Composer
+
+> Composer 是 PHP 的一个依赖管理工具。它允许你申明项目所依赖的代码库，它会在你的项目中为你安装他们。
+
+关于`Composer`的更多介绍可以查看下面的中文文档，里面介绍的很详细。我的理解是`Composer`提供了我们如下的好处和功能：
+
+- “帮助”`PHP`项目模块化，我们可以编写或使用功能模块来组成我们的项目。
+
+- 将那些提供功能的第三方库集中管理，减小了`PHP`项目迁移中的体积，同时增加了项目的可迁移性。
+
+- 解决项目的依赖关系及依赖库的依赖关系。方便开发的同时也方便了测试、运维等工作。
+
+[Composer 中文文档](http://docs.phpcomposer.com/ "跳转")
+
+[Composer 英文官方文档](https://getcomposer.org/doc/ "跳转")
+
+## 安装配置
+
+```
+curl -sS https://getcomposer.org/installer | php
+```
+
+**注意：**如果出现如下的错误，请编译安装php拓展openssl。(可见[PHP编译安装openssl拓展](../20/php-openssl-extension.html "跳转") )
+
+```
+Some settings on your machine make Composer unable to work properly.
+Make sure that you fix the issues listed below and run this script again:
+
+The openssl extension is missing, which means that secure HTTPS transfers are impossible.
+If possible you should enable it or recompile php with --with-openssl
+```
+
+如果成功下载并安装，会在目录生成`composer.phar`文件：
+
+```
+[shebnowei@localhost composer]$ curl -sS https://getcomposer.org/installer | php
+Downloading 1.2.2...
+
+Composer successfully installed to: /home/shebnowei/composer/composer.phar
+Use it: php composer.phar
+Some settings on your machine may cause stability issues with Composer.
+If you encounter issues, try to change the following:
+
+The zlib extension is not loaded, this can slow down Composer a lot.
+If possible, install it or recompile php with --with-zlib
+
+The php.ini used by your command-line PHP is: /usr/local/php/etc/php.ini
+If you can not modify the ini file, you can also run `php -d option=value` to modify ini values on the fly. You can use -d multiple times.
+
+[shebnowei@localhost composer]$ ls -l
+总用量 1668
+-rwxr-xr-x 1 shebnowei shebnowei 1706886 11月 30 23:46 composer.phar
+[shebnowei@localhost composer]$ php composer.phar -V
+Composer version 1.2.2 2016-11-03 17:43:15
+```
+
+从上述的显示可以看到虽然成功安装了`Composer`，但是还是建议我们安装`PHP`的`zlib`拓展，所以继续动态编译安装`zlib`拓展即可（过程和上述openssl拓展类似，略过）。
+安装配置完`PHP`的`zlib`的拓展后重新下载安装`composer`：
+
+```
+[shebnowei@localhost composer]$ curl -sS https://getcomposer.org/installer | php
+All settings correct for using Composer
+Downloading 1.2.2...
+
+Composer successfully installed to: /home/shebnowei/composer/composer.phar
+Use it: php composer.phar
+```
+
+为了每次使用`composer`不再指定`composer.phar`文件路径，我们将`composer.phar`移动到系统环境变量`PATH`所包含的路径下面，然后就能够直接执行`composer`命令:
+
+```
+[shebnowei@localhost composer]$ sudo mv composer.phar /usr/local/bin/composer
+[sudo] password for shebnowei: 
+[shebnowei@localhost composer]$ composer -V
+Composer version 1.2.2 2016-11-03 17:43:15
+```
+
+## 使用
+
+安装配置好`composer`后我们简单地进行测试，来学习使用`composer`的一些实用功能。
+首先我们建立一个`TestProject`目录，在里面新建`composer.json`文件，这个`composer.json`文件就是用来管理该项目所用到的第三方库依赖关系的。
+
+```
+[shebnowei@localhost composer]$ mkdir TestProject
+[shebnowei@localhost composer]$ cd TestProject/
+[shebnowei@localhost TestProject]$ vim composer.json
+```
+
+我们使用官网文档的例子，在`composer.json`中添加`monolog`依赖：
+
+```
+{
+    "require": {
+        "monolog/monolog": "1.*"
+    }
+}
+```
+
+> 那么我们去哪搜索需要的资源信息，或者当我们想发布自己造的轮子、定制的库资源需要上传发布到哪里？
+>
+> [composer主要资源库packagist](https://packagist.org/ "跳转")是官方提供的资源列表仓库，里面可以搜索项目需要的库或者发布自己的软件包。
+> 同时，国内也提供了资源库镜像，可以解决下载速度慢的问题：[Packagist / Composer 中国全量镜像](http://pkg.phpcomposer.com/ "跳转")。
+
+保存后，执行`composer install`将会处理`composer.json`中的依赖关系，并把其安装到`vendor`目录下:
+
+```
+[shebnowei@localhost TestProject]$ composer install
+Loading composer repositories with package information
+Updating dependencies (including require-dev)
+
+                                            
+  [Composer\Downloader\TransportException]  
+  Content-Length mismatch                   
+                                            
+
+install [--prefer-source] [--prefer-dist] [--dry-run] [--dev] [--no-dev] [--no-custom-installers] [--no-autoloader] [--no-scripts] [--no-progress] [--no-suggest] [-v|vv|vvv|--verbose] [-o|--optimize-autoloader] [-a|--classmap-authoritative] [--ignore-platform-reqs] [--] [<packages>]...
+```
+
+上述问题应该是网络传输过程出错，我们需要配置使用[Packagist / Composer 中国全量镜像](http://pkg.phpcomposer.com/ "跳转")。首先我们查看目前`composer`的全局配置并记录，以保证以后可以恢复：
+
+```
+[shebnowei@localhost TestProject]$ composer config --global --list
+[repositories.packagist.type] composer
+[repositories.packagist.url] https?://packagist.org
+[repositories.packagist.allow_ssl_downgrade] true
+[process-timeout] 300
+[use-include-path] false
+[preferred-install] auto
+[notify-on-install] true
+[github-protocols] [https, ssh]
+[vendor-dir] vendor (/home/shebnowei/composer/TestProject/vendor)
+[bin-dir] {$vendor-dir}/bin (/home/shebnowei/composer/TestProject/vendor/bin)
+[cache-dir] /home/shebnowei/.cache/composer
+[data-dir] /home/shebnowei/.local/share/composer
+[cache-files-dir] {$cache-dir}/files (/home/shebnowei/.cache/composer/files)
+[cache-repo-dir] {$cache-dir}/repo (/home/shebnowei/.cache/composer/repo)
+[cache-vcs-dir] {$cache-dir}/vcs (/home/shebnowei/.cache/composer/vcs)
+[cache-ttl] 15552000
+[cache-files-ttl] 15552000
+[cache-files-maxsize] 300MiB (314572800)
+[bin-compat] auto
+[discard-changes] false
+[autoloader-suffix] 
+[sort-packages] false
+[optimize-autoloader] false
+[classmap-authoritative] false
+[prepend-autoloader] true
+[github-domains] [github.com]
+[bitbucket-expose-hostname] true
+[disable-tls] false
+[secure-http] true
+[cafile] 
+[capath] 
+[github-expose-hostname] true
+[gitlab-domains] [gitlab.com]
+[store-auths] prompt
+[archive-format] tar
+[archive-dir] .
+[home] /home/shebnowei/.config/composer
+```
+
+之后执行命令：`composer config -g repo.packagist composer https://packagist.phpcomposer.com`，更改`composer`仓库目录为中国镜像地址：
+
+```
+[shebnowei@localhost TestProject]$ composer config -g repo.packagist composer https://packagist.phpcomposer.com
+[shebnowei@localhost TestProject]$ composer config --global --list[repositories.packagist.type] composer
+[repositories.packagist.url] https://packagist.phpcomposer.com
+...省略
+```
+
+可以看到全局配置中的`[repositories.packagist.url]`已经改为中国镜像地址。之后我们重新执行`composer install`命令：
+
+```
+[shebnowei@localhost TestProject]$ composer install
+Loading composer repositories with package information
+Updating dependencies (including require-dev)
+  - Installing psr/log (1.0.2)
+    Downloading: 100%         
+
+  - Installing monolog/monolog (1.22.0)
+    Downloading: 100%         
+
+monolog/monolog suggests installing aws/aws-sdk-php (Allow sending log messages to AWS services like DynamoDB)
+monolog/monolog suggests installing doctrine/couchdb (Allow sending log messages to a CouchDB server)
+monolog/monolog suggests installing ext-amqp (Allow sending log messages to an AMQP server (1.0+ required))
+monolog/monolog suggests installing ext-mongo (Allow sending log messages to a MongoDB server)
+monolog/monolog suggests installing graylog2/gelf-php (Allow sending log messages to a GrayLog2 server)
+monolog/monolog suggests installing mongodb/mongodb (Allow sending log messages to a MongoDB server via PHP Driver)
+monolog/monolog suggests installing php-amqplib/php-amqplib (Allow sending log messages to an AMQP server using php-amqplib)
+monolog/monolog suggests installing php-console/php-console (Allow sending log messages to Google Chrome)
+monolog/monolog suggests installing rollbar/rollbar (Allow sending log messages to Rollbar)
+monolog/monolog suggests installing ruflin/elastica (Allow sending log messages to an Elastic Search server)
+monolog/monolog suggests installing sentry/sentry (Allow sending log messages to a Sentry server)
+Writing lock file
+Generating autoload files
+```
+
+上述安装过程非常快，所以还是非常推荐使用中国镜像地址。我们会发现项目目录中出现了以下文件：
+
+```
+[shebnowei@localhost TestProject]$ ls -l
+总用量 12
+-rw-rw-r-- 1 shebnowei shebnowei   60 12月  1 19:04 composer.json
+-rw-rw-r-- 1 shebnowei shebnowei 5523 12月  1 19:31 composer.lock
+drwxrwxr-x 5 shebnowei shebnowei   64 12月  1 19:31 vendor
+[shebnowei@localhost TestProject]$ ls -l vendor/
+总用量 8
+-rw-rw-r-- 1 shebnowei shebnowei  178 12月  1 19:31 autoload.php
+drwxrwxr-x 2 shebnowei shebnowei 4096 12月  1 19:31 composer
+drwxrwxr-x 3 shebnowei shebnowei   20 12月  1 19:30 monolog
+drwxrwxr-x 3 shebnowei shebnowei   16 12月  1 19:30 psr
+```
+
+### composer.lock
+
+其中`composer.lock`记录了依赖包的确切的版本号和依赖包的详细信息，可以称作“锁文件”。
+
+```
+[shebnowei@localhost TestProject]$ cat composer.lock 
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "861a979d5c0fcd916dbdb669c5f9e89d",
+    "content-hash": "585e47049b6c4143c5a31fb29d48a3a5",
+    "packages": [
+        {
+            "name": "monolog/monolog",
+            "version": "1.22.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Seldaek/monolog.git",
+                "reference": "bad29cb8d18ab0315e6c477751418a82c850d558"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://packagist.phpcomposer.com/files/Seldaek/monolog/bad29cb8d18ab0315e6c477751418a82c850d558.zip",
+                "reference": "bad29cb8d18ab0315e6c477751418a82c850d558",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "psr/log": "~1.0"
+            },
+            "provide": {
+                "psr/log-implementation": "1.0.0"
+            },
+            "require-dev": {
+                "aws/aws-sdk-php": "^2.4.9 || ^3.0",
+                "doctrine/couchdb": "~1.0@dev",
+                "graylog2/gelf-php": "~1.0",
+                "jakub-onderka/php-parallel-lint": "0.9",
+                "php-amqplib/php-amqplib": "~2.4",
+                "php-console/php-console": "^3.1.3",
+                "phpunit/phpunit": "~4.5",
+                "phpunit/phpunit-mock-objects": "2.3.0",
+                "ruflin/elastica": ">=0.90 <3.0",
+                "sentry/sentry": "^0.13",
+                "swiftmailer/swiftmailer": "~5.3"
+            },
+            "suggest": {
+                "aws/aws-sdk-php": "Allow sending log messages to AWS services like DynamoDB",
+                "doctrine/couchdb": "Allow sending log messages to a CouchDB server",
+                "ext-amqp": "Allow sending log messages to an AMQP server (1.0+ required)",
+                "ext-mongo": "Allow sending log messages to a MongoDB server",
+                "graylog2/gelf-php": "Allow sending log messages to a GrayLog2 server",
+                "mongodb/mongodb": "Allow sending log messages to a MongoDB server via PHP Driver",
+                "php-amqplib/php-amqplib": "Allow sending log messages to an AMQP server using php-amqplib",
+                "php-console/php-console": "Allow sending log messages to Google Chrome",
+                "rollbar/rollbar": "Allow sending log messages to Rollbar",
+                "ruflin/elastica": "Allow sending log messages to an Elastic Search server",
+                "sentry/sentry": "Allow sending log messages to a Sentry server"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Monolog\\": "src/Monolog"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be",
+                    "homepage": "http://seld.be"
+                }
+            ],
+            "description": "Sends your logs to files, sockets, inboxes, databases and various web services",
+            "homepage": "http://github.com/Seldaek/monolog",
+            "keywords": [
+                "log",
+                "logging",
+                "psr-3"
+            ],
+            "time": "2016-11-26 00:15:39"
+        },
+        {
+            "name": "psr/log",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://packagist.phpcomposer.com/files/php-fig/log/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d.zip",
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Log\\": "Psr/Log/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "time": "2016-10-10 12:19:37"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
+```
+
+当这个锁文件存在时，`composer install`会优先下载锁文件里指定版本的依赖包，而忽略`composer.json`文件中的定义。
+而如果我们想更新锁文件里的内容，应该执行`composer update`命令，改命令会根据`composer.json`文件里的信息更新依赖，并将新版本更新进锁文件。
+
+**注意我们应该提交项目的`composer.lock`（包括 composer.json）到git之类的版本库中，以保证团队开发使用相同的依赖。**
+
+### vendor
+
+这个目录存放了该项目所依赖的所有依赖包及依赖包所依赖的软件包，除此之外还包含了自动加载的相关`php`脚本，只要在我们项目中包含`autoload.php`,便可以直接使用所有的依赖项目的代码。
+
+```
+[shebnowei@localhost vendor]$ ls
+autoload.php  composer  monolog  psr
+[shebnowei@localhost vendor]$ cat autoload.php 
+<?php
+
+// autoload.php @generated by Composer
+
+require_once __DIR__ . '/composer/autoload_real.php';
+
+return ComposerAutoloaderInit676f5dca7eaa86827f92e24f967c5dbc::getLoader();
+```
+
+上边为`autoload.php`的内容，该脚本主要引用了另一个脚本`autoload_real.php`,从名字上我们可以猜出这个才是真正实现自动加载的文件（核心）：
+
+```
+[shebnowei@localhost vendor]$ cat ./composer/autoload_real.php 
+<?php
+
+// autoload_real.php @generated by Composer
+
+class ComposerAutoloaderInit676f5dca7eaa86827f92e24f967c5dbc
+{
+    private static $loader;
+
+    public static function loadClassLoader($class)
+    {
+        if ('Composer\Autoload\ClassLoader' === $class) {
+            require __DIR__ . '/ClassLoader.php';
+        }
+    }
+
+    public static function getLoader()
+    {
+        if (null !== self::$loader) {
+            return self::$loader;
+        }
+
+        spl_autoload_register(array('ComposerAutoloaderInit676f5dca7eaa86827f92e24f967c5dbc', 'loadClassLoader'), true, true);
+        self::$loader = $loader = new \Composer\Autoload\ClassLoader();
+        spl_autoload_unregister(array('ComposerAutoloaderInit676f5dca7eaa86827f92e24f967c5dbc', 'loadClassLoader'));
+
+        $useStaticLoader = PHP_VERSION_ID >= 50600 && !defined('HHVM_VERSION');
+        if ($useStaticLoader) {
+            require_once __DIR__ . '/autoload_static.php';
+
+            call_user_func(\Composer\Autoload\ComposerStaticInit676f5dca7eaa86827f92e24f967c5dbc::getInitializer($loader));
+        } else {
+            $map = require __DIR__ . '/autoload_namespaces.php';
+            foreach ($map as $namespace => $path) {
+                $loader->set($namespace, $path);
+            }
+
+            $map = require __DIR__ . '/autoload_psr4.php';
+            foreach ($map as $namespace => $path) {
+                $loader->setPsr4($namespace, $path);
+            }
+
+            $classMap = require __DIR__ . '/autoload_classmap.php';
+            if ($classMap) {
+                $loader->addClassMap($classMap);
+            }
+        }
+
+        $loader->register(true);
+
+        return $loader;
+    }
+}
+```
+
+**强烈推荐**[如何使用composer的autoload来自动加载自己编写的函数库与类库？](http://drops.leavesongs.com/php/composer-autoload-class-and-function-written-myself.html "跳转")，
+对照着自己的项目读完后会对`composer`的`autoload`机制原理有一个较为深入的理解。同时可以查看这篇blog：[深入 Composer autoload](https://laravel-china.org/topics/1002 "跳转")。
+
+### composer command
+
+更多`composer`命令行指令请查阅：[composer命令行](http://docs.phpcomposer.com/03-cli.html "跳转")。
+
+## 技巧
+
+附上官方推荐的链接（随着自己的积累之后会更新自己的小心得）：
+
+[PHP 开发者该知道的 5 个 Composer 小技巧](https://segmentfault.com/a/1190000000355928 "跳转")
+
+> ## 参考文献
+>
+>[Composer 中文文档](http://docs.phpcomposer.com/ "跳转")
+>
+>[如何使用composer的autoload来自动加载自己编写的函数库与类库？](http://drops.leavesongs.com/php/composer-autoload-class-and-function-written-myself.html "跳转")
+>
+>[深入 Composer autoload](https://laravel-china.org/topics/1002 "跳转")
+>
+>[PHP 开发者该知道的 5 个 Composer 小技巧](https://segmentfault.com/a/1190000000355928 "跳转")
+
+
+
+
+
+
+
