@@ -40,14 +40,14 @@ $$
 因此，问题进一步简化为：
 
 $$
-P(S) = P(w_1) \cdot P(w_2|w_1) \cdot P(w_3|w_2) \cdots P(w_i|w_{i-1} \cdots P(w_n|w_{n-1}))
+P(S) = P(w_1) \cdot P(w_2|w_1) \cdot P(w_3|w_2) \cdots P(w_i|w_{i-1}) \cdots P(w_n|w_{n-1})
 $$
 
 上式对应的统计语言模型是二元模型（Bigram Model）。类比得到：假设一个词由前边的$N-1$个词决定，那么就是N元模型。
 那么好了，接下来的问题就是计算条件概率$P(w_i|w_{i-1})$。
 
 $$
-P(wi|w_{i-1}) = \frac{P(w_{i-1},w_i)}{P(w_{i-1})}
+P(w_i|w_{i-1}) = \frac{P(w_{i-1},w_i)}{P(w_{i-1})}
 $$
 
 即条件概率进一步如上展开为联合概率$P(w_{i-1},w_i)$和边缘概率$P(w_{i-1})$的形式。
