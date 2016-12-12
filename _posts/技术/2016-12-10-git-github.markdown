@@ -99,6 +99,7 @@ $ git config --global --list
 ```
 
 类似地，针对单个项目仓库，我们可以在项目所在路径通过如下三条命令配置和查看用户信息：
+
 ```
 $ git config user.name "Your Name"
 $ git config user.email "email@example.com"
