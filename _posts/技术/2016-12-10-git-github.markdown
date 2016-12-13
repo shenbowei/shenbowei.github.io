@@ -157,7 +157,8 @@ $ git config --list
 2. 在本地对应的项目目录下`git clone https://github.com/"your name"/"forked repo name".git`。这样在本地就能够看到该项目的完整仓库了（只是Fork时的版本）。
 
 3. 此时，自己Fork的仓库和原仓库相对是独立的，那么如果原仓库更新了代码，我们的仓库如何保持和原仓库的同步是一个非常重要的问题，也是发起`Pull request`前需要保证的一步。
-	我们需要把原项目的地址作为我们本项目的远程上游地址（upstream是我们起的名字，可以改为其他）：
+	我们需要把原项目的地址作为我们本项目的远程上游地址（`upstream`是我们起的名字，可以改为其他）：
+	
 		git remote add upstream https://github.com/"原项目作者名字"/"项目名称".git
 		
 		[shebnowei@localhost MyGitTest]$ git remote -v
@@ -171,7 +172,7 @@ $ git config --list
 
 5. 这里需要注意两点：
 
-	- 本地和`origin`的master分支最好和`upstream`的master分支保持一致，即我们的改动不建议直接在master分支。master分支需要作为原项目的参考。
+	- 本地和`origin`的`master`分支最好和`upstream`的`master`分支保持一致，即我们的改动不建议直接在`master`分支。`master`分支需要作为原项目的参考。
 	
 	- 本地建立新的分支`feature/... 或 bug/...`，在该分支上进行修改，并提交到`origin`的对应分支。
 	
@@ -227,7 +228,21 @@ $ git config --list
 4. `git push origin master`,提交到远程库，此时该`Pull request`会自动关闭。
 
 
-## Github 小技巧
+## Github 实用技巧
+
+1. [https://github.com/trending](https://github.com/trending "跳转")：这个网页上会显示当天、当周或者当月获取最多`star`的项目、开发者，而且可以根据语言分类。
+	可以作为我们学习流行、优秀开源项目的一个参考依据。
+
+2. [https://github.com/explore/subscribe](https://github.com/explore/subscribe "跳转")：这个页面可以订阅`Github`的邮件通知。
+	`Github`会根据你的选择按每天、每周或者每月向你发送你感兴趣的项目、开发者的动态。
+
+3. 在项目`code`面板下按下`t`键可以对该项目的所有文件进行搜索。按`shift+/`（即`?`号）可以显示快捷键。
+
+4. 在搜索`issue`或者`pr`的时候，可以添加相关的过滤条件，具体可以参考：[https://help.github.com/categories/search/](https://help.github.com/categories/search/ "跳转")。
+
+5. 在评论时或者发起`pr`时，可以通过`#`引用`issue`（输入`#`后会自动显示相关`issue`，可以通过之后的输入过滤）。
+
+6. 如果想要将某段具体代码指给他人看，可以通过进入该文件，在具体代码段的开始处点击行号，按住`shift`点击结尾行号，这是该网页的`url`就会添加该段代码的锚点。把这个`url`发给对方就可以了。
 
 下面为`git`相关使用指令的快捷列表，便于快捷查询使用：
 
@@ -240,6 +255,8 @@ $ git config --list
 >[git官方文档](https://git-scm.com/docs "跳转")
 >
 >[Pro Git（中文版）](http://git.oschina.net/progit/ "跳转")
+>
+>[Git 版本管理](https://laravist.com/series/use-git-in-your-own-way "跳转")
 
 
 
