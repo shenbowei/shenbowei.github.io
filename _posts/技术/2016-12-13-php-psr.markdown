@@ -1,0 +1,462 @@
+---
+layout: post
+title: PHP Standards Recommendations
+category: 技术
+author: 沈伯伟
+tags: PHP
+---
+
+* 目录
+{:toc}
+
+> PSR 是 PHP Standards Recommendations 的简写，由 PHP FIG 组织制定的 PHP 规范，是 PHP 开发的实践标准。
+> PHP FIG,FIG 是 Framework Interoperability Group（框架可互用性小组）的缩写，由几位开源框架的开发者成立于 2009 年，从那开始也选取了很多其他成员进来
+> （包括但不限于Laravel, Joomla, Drupal, Composer, Phalcon, Slim, Symfony, Zend Framework等），虽然不是「官方」组织，但也代表了大部分的 PHP 社区。
+> 组织的目的在于：以最低程度的限制，来统一各个项目的编码规范，避免各家自行发展的风格阻碍了程序设计师开发的困扰，于是大伙发明和总结了PSR。
+
+总结一句话就是`PSR`是编写`PHP`代码需要遵守的规范。目前官网上公布的规范共有`18`条([PHP Standards Recommendations](http://www.php-fig.org/psr/ "跳转"))。
+其中处于`ACCEPTED`状态的共有`7`条，下面主要学习这`7`条规范(附加已经弃用的`PSR-0`，辅助理解替代它的`PSR-4`)。
+
+P.S:`PSR`规范的状态可以分为如下几个阶段：
+
+Stage : `Pre-Draft` -> `Draft` -> `Review` -> `Accepted` (-> `DEPRECATED`)
+
+## PSR-1 Basic Coding Standard
+
+- `PHP`文件**必须****只能**使用`<?php`和`<?=`标签。
+
+- `PHP`文件**必须****只能**使用`UTF-8 without BOM`编码。
+
+- 一个`PHP`文件中**应该**或声明符号（类，函数，常量等），
+	或其他会产生“副作用”(side-effects)的操作（如：生成文件输出以及修改.ini配置文件等）。
+	但是，**不应该**同时做。
+
+- 命名空间和类**必须**遵从“自动加载”规范[PSR-0，PSR-4]。
+
+- 类的名字**必须**使用`StudlyCaps`大写开头的驼峰命名方式声明。
+
+- 类常量**必须**使用全大写方式，单词见使用`_`分割的方式声明（all upper case with underscore separators）。
+
+- 方法的名字**必须**使用`camelCase`小写开头的驼峰命名方式声明。
+
+具体解释和示例：[PSR-1: Basic Coding Standard](http://www.php-fig.org/psr/psr-1/ "跳转")
+
+## PSR-2 Coding Style Guide
+
+- 代码**必须**遵从PSR-1。
+
+- 代码**必须**使用`4个空格`作为缩进，而不是`tab`。
+
+- 在每一行代码的长度上**必须不能**有硬性约束。软性约束是**必须**小于`120`字符，**应该**小于`80`字符。
+
+- 在声明`namespace`后**必须**留一个空行，同样`use`命名空间后也**必须**留一空行。
+
+- 类的开始花括号(`{`)**必须**在单独一行，结束括号(`}`)也**必须**在主体后单独一行。
+
+- 方法的开始花括号(`{`)**必须**在单独一行，结束括号(`}`)也**必须**在主体后单独一行。
+
+- 访问修饰符（`private`、`protected`或者`public`）**必须**添加到所有的属性和方法前，
+	`abstract`以及`final`**必须**声明在访问修饰符之前，`static`**必须**声明在访问修饰符之后。
+
+- 控制结构的`关键字`后**必须**要有一个空格，方法或函数调用后**必须不能**有空格。
+
+- 控制结构的开始花括号(`{`)**必须**在*同一行*，结束括号(`}`)也**必须**在主体后*下一行*。
+
+- 控制结构的开始圆括号`(`后**必须不能**有空格，结束圆括号`)`前**必须不能**有空格。
+
+一个符合上述部分示例的示例：
+
+```
+<?php
+namespace Vendor\Package;
+
+use FooInterface;
+use BarClass as Bar;
+use OtherVendor\OtherPackage\BazClass;
+
+class Foo extends Bar implements FooInterface
+{
+    public function sampleMethod($a, $b = null)
+    {
+        if ($a === $b) {
+            bar();
+        } elseif ($a > $b) {
+            $foo->bar($arg1);
+        } else {
+            BazClass::bar($arg2, $arg3);
+        }
+    }
+
+    final public static function bar()
+    {
+        // method body
+    }
+}
+```
+
+具体解释和示例：[PSR-2: Coding Style Guide](http://www.php-fig.org/psr/psr-2/ "跳转")
+
+## PSR-3 Logger Interface
+
+本条规范制定了日志接口规范，目的是简化、通用日志接口。下面以`Psr\Log\LoggerInterface`为例介绍：
+
+- 基本 Basics
+
+	- `LoggerInterface`接口对外定义了八个方法，分别用来记录[RFC 5424](https://tools.ietf.org/html/rfc5424 "跳转")中定义的八个等级的日志：
+		`debug`，`info`，`notice`，`warning`，`error`，`critical`，`alert`，`emergency`。
+
+	- 第九个方法为`log`，第一个参数为记录日志的等级（也就是上边说的八个等级之一）。可使用一个预先定义的等级常量作为此参数来调用`log`方法，
+		且**必须**与直接调用以上八个方法具有同样的结果。如果传入的等级常量参数没有预先定义，**必须**抛出`Psr\Log\InvalidArgumentException`类型的异常。
+		在不确定当前接口支持的情况下，使用者**不应该**使用未支持的等级常量来调用此方法。
+
+- 消息 Message
+	
+	- 每个方法接收一个`string`或者具有一个`__toString()`方法的对象作为消息参数。这样是为了让实现者（Implementors）**可以**直接处理传来的对象。
+		如果不是这样，实现者**必须**把对象转换为`string`。
+	
+	- 消息**可以**包含占位符（placeholders ），这些占位符**可以**被实现者用上下文（context）数组的值替换掉。（类似于模板）
+	
+		关于占位符的更多描述：
+		
+		- 占位符的名称**必须**与上下文数组中的键名保持一致。
+
+		- 占位符的名称**必须**由一个左花括号`{`以及一个右括号`}`包含。花括号与名称之间**必须不能**有空格符。
+
+		- 占位符的名称**应该**只由`A-Z`、`a-z`,`0-9`、下划线`_`、以及英文句号`.`组成，其它字符作为将来占位符规范的保留。
+
+		- 实现者**可以**通过对占位符采用不同的转义和转换策略来生成最终记录的日志。
+			而使用者（Users）在不知道上下文的数据时，**不应该**提前转义占位符。
+
+		如下是一个上下文替换的实现例子：
+		
+			/* *
+			* Interpolates context values into the message placeholders.
+			*/
+			function interpolate($message, array $context = array())
+			{
+			  // build a replacement array with braces around the context keys
+			  $replace = array();
+			  foreach ($context as $key => $val) {
+				  // check that the value can be casted to string
+				  if (!is_array($val) && (!is_object($val) || method_exists($val, '__toString'))) {
+					  $replace['{' . $key . '}'] = $val;
+				  }
+			  }
+
+			  // interpolate replacement values into the message and return
+			  return strtr($message, $replace);
+			}
+
+			// a message with brace-delimited placeholder names
+			$message = "User {username} created";
+
+			// a context array of placeholder names => replacement values
+			$context = array('username' => 'bolivar');
+
+			// echoes "User bolivar created"
+			echo interpolate($message, $context);
+
+- 上下文 Context
+
+	- 每个方法（`LoggerInterface`的九个方法）都接受一个上下文数组参数，用来装载字符串不好表示的外部信息。
+		这个数组可以包含任何信息，所以实现者**必须**确保能尽可能“宽容”地处理其上下文的信息，
+		对于上下文的数据，**必须不能** 抛出异常，或产生任何PHP错误、警告或提醒信息（`error`、`warning`、`notice`）。
+	
+	- 如需通过上下文参数传入了一个`Exception`对象，它**必须**以`'exception'`作为键名。
+		记录异常信息是很普遍的，而且允许实现者提取异常栈轨迹（stack trace）在日志后台支持的情况下。
+		实现者仍然**必须**验证键名为`'exception'`的键值是否真的是一个`Exception`，毕竟它**可以**包含任何信息。
+
+- 相关辅助类和接口 Helper classes and interfaces
+
+	- `Psr\Log\AbstractLogger`类让你能够很轻易地实现`LoggerInterface`接口，只需继承它和实现其中的`log`方法，而另外八个方法就能够把记录信息和上下文信息传给它。
+	
+	- `Psr\Log\LoggerTrait`trait同样也只需实现其中的`log`方法。
+		需要特别注意：因为在traits不能实现接口，所以你仍然不得不去实现`LoggerInterface`。
+	
+	- `Psr\Log\NullLogger`类和接口一同提供。在没有日志提供的情况下，使用者**可以**把它当作一个“低效运行的黑洞”（fall-back "black hole" ）实现。
+		不过，当上下文的构建非常消耗资源时（虽然是`NullLogger`,也要通过一步context构建才生成最终日志），带条件检查的日志记录或许是更好的办法（绕过context构建）。
+	
+	- `Psr\Log\LoggerAwareInterface`类只包含`setLogger(LoggerInterface $logger)`方法，框架可以使用它实现自动装载任意的日志记录实例。
+	
+	- `Psr\Log\LoggerAwareTrait`trait可以被用来实现等价的接口在任何的类中，它提供你访问`$this->logger`。
+	
+	- `Psr\Log\LogLevel`类保存八个记录等级常量。
+
+`psr/log`包中的部分内容示例：
+
+- Psr\Log\LoggerInterface
+
+```
+<?php
+
+namespace Psr\Log;
+
+/**
+ * Describes a logger instance
+ *
+ * The message MUST be a string or object implementing __toString().
+ *
+ * The message MAY contain placeholders in the form: {foo} where foo
+ * will be replaced by the context data in key "foo".
+ *
+ * The context array can contain arbitrary data, the only assumption that
+ * can be made by implementors is that if an Exception instance is given
+ * to produce a stack trace, it MUST be in a key named "exception".
+ *
+ * See https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md
+ * for the full interface specification.
+ */
+interface LoggerInterface
+{
+    /**
+     * System is unusable.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */
+    public function emergency($message, array $context = array());
+
+    /**
+     * Action must be taken immediately.
+     *
+     * Example: Entire website down, database unavailable, etc. This should
+     * trigger the SMS alerts and wake you up.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */
+    public function alert($message, array $context = array());
+
+    /**
+     * Critical conditions.
+     *
+     * Example: Application component unavailable, unexpected exception.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */
+    public function critical($message, array $context = array());
+
+    /**
+     * Runtime errors that do not require immediate action but should typically
+     * be logged and monitored.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */
+    public function error($message, array $context = array());
+
+    /**
+     * Exceptional occurrences that are not errors.
+     *
+     * Example: Use of deprecated APIs, poor use of an API, undesirable things
+     * that are not necessarily wrong.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */
+    public function warning($message, array $context = array());
+
+    /**
+     * Normal but significant events.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */
+    public function notice($message, array $context = array());
+
+    /**
+     * Interesting events.
+     *
+     * Example: User logs in, SQL logs.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */
+    public function info($message, array $context = array());
+
+    /**
+     * Detailed debug information.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */
+    public function debug($message, array $context = array());
+
+    /**
+     * Logs with an arbitrary level.
+     *
+     * @param mixed $level
+     * @param string $message
+     * @param array $context
+     * @return null
+     */
+    public function log($level, $message, array $context = array());
+}
+```
+
+- Psr\Log\LoggerAwareInterface
+
+```
+<?php
+
+namespace Psr\Log;
+
+/**
+ * Describes a logger-aware instance
+ */
+interface LoggerAwareInterface
+{
+    /**
+     * Sets a logger instance on the object
+     *
+     * @param LoggerInterface $logger
+     * @return null
+     */
+    public function setLogger(LoggerInterface $logger);
+}
+```
+
+- Psr\Log\LogLevel
+
+```
+<?php
+
+namespace Psr\Log;
+
+/**
+ * Describes log levels
+ */
+class LogLevel
+{
+    const EMERGENCY = 'emergency';
+    const ALERT     = 'alert';
+    const CRITICAL  = 'critical';
+    const ERROR     = 'error';
+    const WARNING   = 'warning';
+    const NOTICE    = 'notice';
+    const INFO      = 'info';
+    const DEBUG     = 'debug';
+}
+```
+
+相关英文原文请查看：[PSR-3: Logger Interface](http://www.php-fig.org/psr/psr-3/ "跳转")
+
+## PSR-4 Autoloading Standard
+
+本条规范描述如何从文件路径[自动加载](http://php.net/autoload "跳转")类。本规范可以作为其他自动载入规范的补充，包括`PSR-0`。
+此外，本规范还描述自动载入的类对应的文件存放路径规范。
+
+1. 本规范中所说的“类”包含：类，接口，traits以及其他类似的结构。
+
+2. 一个完全合格的类名需具有以下形式:
+
+		\<NamespaceName>(\<SubNamespaceNames>)*\<ClassName>
+		\<命名空间>(\<子类名>)*\<类名>
+		其中子类名可为0或多个
+	
+	1. 完全合格的类名**必须**要有一个顶级命名空间（top-level namespace），称为 "vendor namespace"。
+	
+	2. 完全合格的类名**可以**有一个或多个子命名空间。
+	
+	3. 完全合格的类名**必须**有一个最终的类名。
+	
+	4. 完全合格的类名中的下滑线`_`在任一部分都是没有特殊含义（废除了`PSR-0`中`_`就是目录分割符的写法）。
+	
+	5. 完全合格的类名**可以**由任意大小写字母组成。
+	
+	6. 所有类名**必须**都是大小写敏感的。
+	
+3. 当根据完全合格的类名载入对应文件时……
+
+	1. 在一个完全合格的类名中，前面连续的一个或多个命名空间和子命名空间（不包含最前面的命名空间分隔符），
+		即“命名空间前缀”，其至少对应一个“文件基目录”。
+	
+	2. 紧接“命名空间前缀”后的一系列子命名空间名对应”文件基目录“里的子目录，
+		其中的命名空间分隔符作为目录分隔符。子文件目录的名字**必须**匹配子命名空间的名字（大小写敏感）。
+		
+	3. 结尾的类名对应一个`.php`为后缀的文件，这个文件的名字**必须**匹配结尾类名（大小写敏感）。
+	
+	理解：上边总结一下就是：`\Aa\Bb\Cc\Dd`这个类，其中若命名空间前缀`\Aa\Bb`对应“文件基目录”为`/path/src/`。
+	那么这个类对应的文件就是：`/path/src/Cc/Dd.php`。
+	
+4. 自动加载的实现**必须不能**抛出异常，**必须不能**引起任何级别的错误，**应该不能**有返回值。
+
+下表展示了符合规范类名、命名空间前缀和文件基目录所对应的文件路径。
+
+<table><thead>
+<tr>
+<th>Fully Qualified Class Name</th>
+<th>Namespace Prefix</th>
+<th>Base Directory</th>
+<th>Resulting File Path</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>\Acme\Log\Writer\File_Writer</td>
+<td>Acme\Log\Writer</td>
+<td>./acme-log-writer/lib/</td>
+<td>./acme-log-writer/lib/File_Writer.php</td>
+</tr>
+<tr>
+<td>\Aura\Web\Response\Status</td>
+<td>Aura\Web</td>
+<td>/path/to/aura-web/src/</td>
+<td>/path/to/aura-web/src/Response/Status.php</td>
+</tr>
+<tr>
+<td>\Symfony\Core\Request</td>
+<td>Symfony\Core</td>
+<td>./vendor/Symfony/Core/</td>
+<td>./vendor/Symfony/Core/Request.php</td>
+</tr>
+<tr>
+<td>\Zend\Acl</td>
+<td>Zend</td>
+<td>/usr/includes/Zend/</td>
+<td>/usr/includes/Zend/Acl.php</td>
+</tr>
+</tbody></table>
+
+相关英文原文请查看：[PSR-4: Autoloader](http://www.php-fig.org/psr/psr-4/ "跳转")
+
+## PSR-6 Caching Interface
+
+To be continued...
+
+## PSR-7 HTTP Message Interface
+
+
+
+## PSR-13 Hypermedia Links
+
+
+
+## 弃用：PSR-0 Autoloading Standard
+
+
+
+
+> ## 参考文献
+>
+>[PHP Standards Recommendations](http://www.php-fig.org/psr/ "跳转")
+>
+>[PHP PSR-1 基本代码规范(中文版)](http://www.cnblogs.com/wangcy/p/5140013.html "跳转")
+>
+>[PHP中PSR-(0-4)规范](http://blog.csdn.net/think2me/article/details/42844391 "跳转")
+
+
+
+
+
+
+
+
