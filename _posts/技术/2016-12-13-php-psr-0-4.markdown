@@ -430,9 +430,80 @@ class LogLevel
 
 相关英文原文请查看：[PSR-4: Autoloader](http://www.php-fig.org/psr/psr-4/ "跳转")
 
+[Example Implementations of PSR-4](http://www.php-fig.org/psr/psr-4/examples/ "跳转")
+
 ## 弃用：PSR-0 Autoloading Standard
 
-未完待续~
+> 2014年10月21日起PSR-0已经被标记为“弃用”，PSR-4成为其的替代。
+
+下面描述了一些强制性的要求，这些要求在自动加载交互中必须被坚持遵守。
+
+- Mandatory 强制
+
+	- 一个完整合格的命名空间和类**必须**具备如下的结构：
+		
+			\<Vendor Name>\(<Namespace>\)*<Class Name>
+		
+	- 每一个命名空间**必须**有一个顶级的命名空间（"Vendor Name"）。
+	
+	- 每一个命名空间**可以**有多个子命名空间。
+	
+	- 在从文件系统加载时，每一个命名空间分隔符（`\\`）被转化为一个目录分割符（`DIRECTORY_SEPARATOR`）。
+	
+	- 类名中的每一个`_`符也被转化为一个目录分割符（`DIRECTORY_SEPARATOR`），
+		而命名空间中的`_`没有特殊含义。**（与PSR-4最大区别）**
+	
+	- 在从文件系统中加载的时候，完全合格的命名空间和类名的后缀都是`.php`。
+	
+	- `vendor names`,命名空间（`namespaces`）和类名（`class names `）均可以由大小写字符组成，大小写敏感。
+	
+- 例子
+
+	- `\Doctrine\Common\IsolatedClassLoader` => `/path/to/project/lib/vendor/Doctrine/Common/IsolatedClassLoader.php`
+	
+	- `\Symfony\Core\Request` => `/path/to/project/lib/vendor/Symfony/Core/Request.php`
+	
+	- `\Zend\Acl` => `/path/to/project/lib/vendor/Zend/Acl.php`
+	
+	- `\Zend\Mail\Message` => `/path/to/project/lib/vendor/Zend/Mail/Message.php`
+	
+- 命名空间和类名中有下划线_时
+
+	- `\namespace\package\Class_Name` => `/path/to/project/lib/vendor/namespace/package/Class/Name.php`
+	
+	- `\namespace\package_name\Class_Name` => `/path/to/project/lib/vendor/namespace/package_name/Class/Name.php`
+	
+这些标准**应该**成为自动加载实现的最低标准。你可以利用`PHP 5.3`中加载类的样例`SplClassLoader`来测试加载遵从这些标准的类。
+
+- 例子的实现
+
+	下面的样例函数将简单地展示上述的标准是如何实现自动加载的：
+	
+		<?php
+
+		function autoload($className)
+		{
+			$className = ltrim($className, '\\');
+			$fileName  = '';
+			$namespace = '';
+			if ($lastNsPos = strrpos($className, '\\')) {
+				$namespace = substr($className, 0, $lastNsPos);
+				$className = substr($className, $lastNsPos + 1);
+				$fileName  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+			}
+			$fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+
+			require $fileName;
+		}
+		spl_autoload_register('autoload');
+	
+- `SplClassLoader`的实现
+
+	下面的`gist`是一个简单的`SplClassLoader`实现，它可以加载你遵从上述自动加载标准所定义命名的类。
+	目前推荐使用这套标准加载`PHP 5.3`的类。
+	
+	[http://gist.github.com/221634](http://gist.github.com/221634 "跳转")
+	
 
 后续：[PSR 6,7,13](../26/php-psr-6-7-13.html "跳转")。
 
