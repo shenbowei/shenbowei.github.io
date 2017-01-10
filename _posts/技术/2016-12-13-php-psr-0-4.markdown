@@ -23,6 +23,8 @@ P.S:`PSR`规范的状态可以分为如下几个阶段：
 
 Stage : `Pre-Draft` -> `Draft` -> `Review` -> `Accepted` (-> `DEPRECATED`)
 
+**本文的翻译或者理解有问题，欢迎留言指正~**
+
 ## PSR-1 Basic Coding Standard
 
 - `PHP`文件**必须****只能**使用`<?php`和`<?=`标签。
@@ -503,6 +505,8 @@ class LogLevel
 	目前推荐使用这套标准加载`PHP 5.3`的类。
 	
 	[http://gist.github.com/221634](http://gist.github.com/221634 "跳转")
+	
+相关英文原文请查看：[PSR-0: Autoloading Standard](http://www.php-fig.org/psr/psr-0/ "跳转")
 	
 
 后续：[PSR 6,7,13](../26/php-psr-6-7-13.html "跳转")。
