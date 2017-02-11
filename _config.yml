@@ -28,6 +28,10 @@ rss_url: /pages/atom.xml
 gavatar: /public/img/avatar.jpg
 favicon: /public/img/avatar.jpg
 
+# google analytics 设置
+ga:
+  id: UA-91776373-1
+  url: shenbowei.github.io
 
 # 主题设置，自动激活某个标签
 active: 读书
