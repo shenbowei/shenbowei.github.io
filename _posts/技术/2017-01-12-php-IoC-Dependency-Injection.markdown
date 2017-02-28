@@ -3,7 +3,7 @@ layout: post
 title: PHP 设计模式 IoC - Dependency Injection
 category: 技术
 author: shenbowei
-tags: PHP
+tags: PHP 设计模式
 ---
 
 * 目录
