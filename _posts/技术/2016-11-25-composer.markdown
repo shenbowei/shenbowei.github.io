@@ -28,7 +28,7 @@ tags: Composer
 curl -sS https://getcomposer.org/installer | php
 ```
 
-**注意：**如果出现如下的错误，请编译安装php拓展openssl。(可见[PHP编译安装openssl拓展](../20/php-openssl-extension.html "跳转") )
+**注意：**如果出现如下的错误，请编译安装php拓展openssl。(可见[PHP编译安装openssl拓展](https://shenbowei.github.io/2016/11/20/php-openssl-extension.html "跳转") )
 
 ```
 Some settings on your machine make Composer unable to work properly.

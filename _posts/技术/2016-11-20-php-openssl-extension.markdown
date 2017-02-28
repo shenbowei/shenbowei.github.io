@@ -6,7 +6,7 @@ author: 沈伯伟
 tags: PHP
 ---
 
-之前在编译安装`PHP`的时候([centos下配置Apache+Nginx+PHP+MariaDB环境--编译篇](../10/lanmp-compiler.html#php-1 "跳转"))没有添加`openssl`拓展。
+之前在编译安装`PHP`的时候([centos下配置Apache+Nginx+PHP+MariaDB环境--编译篇](https://shenbowei.github.io/2016/11/10/lanmp-compiler.html "跳转"))没有添加`openssl`拓展。
 在此，单独编译`openssl`拓展，并添加到`PHP`。
 
 ## 编译安装openssl拓展

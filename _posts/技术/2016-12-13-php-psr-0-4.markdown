@@ -17,7 +17,7 @@ tags: PHP
 总结一句话就是`PSR`是编写`PHP`代码需要遵守的规范。目前官网上公布的规范共有`18`条([PHP Standards Recommendations](http://www.php-fig.org/psr/ "跳转"))。
 其中处于`ACCEPTED`状态的共有`7`条，下面主要学习这`7`条规范(附加已经弃用的`PSR-0`，辅助理解替代它的`PSR-4`)。
 
-PSR-6,7,13在：[PSR 6,7,13](../26/php-psr-6-7-13.html "跳转")。
+PSR-6,7,13在：[PSR 6,7,13](https://shenbowei.github.io/2016/12/26/php-psr-6-7-13.html "跳转")。
 
 P.S:`PSR`规范的状态可以分为如下几个阶段：
 
@@ -509,7 +509,7 @@ class LogLevel
 相关英文原文请查看：[PSR-0: Autoloading Standard](http://www.php-fig.org/psr/psr-0/ "跳转")
 	
 
-后续：[PSR 6,7,13](../26/php-psr-6-7-13.html "跳转")。
+后续：[PSR 6,7,13](https://shenbowei.github.io/2016/12/26/php-psr-6-7-13.html "跳转")。
 
 > ## 参考文献
 >

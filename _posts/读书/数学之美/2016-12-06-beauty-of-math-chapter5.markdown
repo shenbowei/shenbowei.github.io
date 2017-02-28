@@ -8,7 +8,7 @@ tags: 数学之美
 
 **keyword**：`隐含马尔可夫模型`
 
-本章是第三章的进一步拓展，推荐结合[第三章 统计语言模型](../../10/22/beauty-of-math-chapter3.html "跳转")一起看。
+本章是第三章的进一步拓展，推荐结合[第三章 统计语言模型](https://shenbowei.github.io/2016/10/22/beauty-of-math-chapter3.html "跳转")一起看。
 
 ## 通信模型
 
@@ -66,7 +66,7 @@ $$
 
 $P(O_1,O_2,O_3, \cdots \| S_1,S_2,S_3, \cdots)$:表示信息$S_1,S_2,S_3, \cdots$在传输后变为$O_1,O_2,O_3, \cdots$的概率。
 
-$P(S_1,S_2,S_3, \cdots)$:表示$S_1,S_2,S_3, \cdots$本身是一个在接收端合乎情理的信号（可以参考[第三章 统计语言模型](../../10/22/beauty-of-math-chapter3.html "跳转")）。
+$P(S_1,S_2,S_3, \cdots)$:表示$S_1,S_2,S_3, \cdots$本身是一个在接收端合乎情理的信号（可以参考[第三章 统计语言模型](https://shenbowei.github.io/2016/10/22/beauty-of-math-chapter3.html "跳转")）。
 
 $P(O_1,O_2,O_3, \cdots)$：表示发送端产生$O_1,O_2,O_3, \cdots$的可能性（一旦信息$O_1,O_2,O_3, \cdots$产生了，它就不会改变了，这时$P(O_1,O_2,O_3, \dots)$就是一个可以忽略的常数。**表示没有太理解**）。
 
@@ -176,7 +176,7 @@ $$
 P(O_t|S_t) \approx \frac{\# (O_t,S_t)}{\# (S_t)}
 $$ 
 
-对于(5.7)的转移概率，和[第三章 统计语言模型](../../10/22/beauty-of-math-chapter3.html "跳转")的条件概率完全相同：
+对于(5.7)的转移概率，和[第三章 统计语言模型](https://shenbowei.github.io/2016/10/22/beauty-of-math-chapter3.html "跳转")的条件概率完全相同：
 
 $$
 P(S_t|S_{t-1}) \approx \frac{\# (S_{t-1},S_t)}{\# (S_{t-1})}
