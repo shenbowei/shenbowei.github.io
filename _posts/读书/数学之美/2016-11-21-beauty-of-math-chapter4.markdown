@@ -1,8 +1,8 @@
 ---
 layout: post
-title: 读书笔记 数学之美 第四章 谈谈分词
+title: 读书笔记：数学之美-谈谈分词
 category: 读书
-author: 沈伯伟
+author: shenbowei
 tags: 数学之美
 ---
 

@@ -1,8 +1,8 @@
 ---
 layout: post
-title: 读书笔记 数学之美 第二章 自然语言处理
+title: 读书笔记：数学之美-自然语言处理
 category: 读书
-author: 沈伯伟
+author: shenbowei
 tags: 数学之美
 ---
 

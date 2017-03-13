@@ -1,8 +1,8 @@
 ---
 layout: post
-title: 读书笔记 数学之美 第三章 统计语言模型
+title: 读书笔记：数学之美-统计语言模型
 category: 读书
-author: 沈伯伟
+author: shenbowei
 tags: 数学之美
 ---
 
