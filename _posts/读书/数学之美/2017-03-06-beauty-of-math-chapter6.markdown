@@ -28,7 +28,7 @@ tags: 数学之美
 因此，香农指出，上述例子准确的信息量的定义应该是：
 
 $$
-H = -(p_1 \cdot logp_1 + p_2 \cdot logp_2 + \cdots + p_32 \cdot logp_{32})
+H = -(p_1 \cdot logp_1 + p_2 \cdot logp_2 + \cdots + p_{32} \cdot logp_{32})
 $$
 
 香农把它定义为`信息熵`，一般用H表示，单位是比特。对于任意一个随机变量X，它的熵定义为：
