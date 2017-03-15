@@ -175,3 +175,10 @@ th {
 #markdown-toc a{
     border: none;
 }
+
+/*copyright*/
+.copyright {
+	font-size: 14px;
+	text-align: center;
+	margin-bottom: 0;
+}
