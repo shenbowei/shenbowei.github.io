@@ -14,7 +14,7 @@ tags: PHP
 
 ## array_chunk
 
-> array array_chunk ( array $input , int $size [, bool $preserve_keys = false ] )
+> `array array_chunk ( array \$input , int \$size [, bool \$preserve_keys = false ] )`
 
 将一个数组分割成多个数组，其中每个数组的单元数目由`size`决定。最后一个数组的单元数目可能会少于`size`个。
 
@@ -75,11 +75,11 @@ Array
 */
 ```
 
-**结论：当`$preserve_keys = false`时，无论数组键值是不是数字，子数组都会按照数字从`0`开始重新索引。**
+**结论：当`\$preserve_keys = false`时，无论数组键值是不是数字，子数组都会按照数字从`0`开始重新索引。**
 
 ## array_filter
 
-> array array_filter ( array $array [, callable $callback [, int $flag = 0 ]] )
+> `array array_filter ( array \$array [, callable \$callback [, int \$flag = 0 ]] )`
 
 用回调函数过滤数组中的单元。依次将`array`数组中的每个值传递到`callback`函数。如果`callback`函数返回`TRUE`，则`input`数组的当前值会被包含在返回的结果数组中。数组的键名保留不变。
 
@@ -147,7 +147,7 @@ Array
 
 ## array_map
 
-> array array_map ( callable $callback , array $array1 [, array $... ] )
+> `array array_map ( callable \$callback , array \$array1 [, array \$... ] )`
 
 为数组的每个元素应用回调函数。返回值为`array1`每个元素应用`callback`函数之后的数组。`callback`函数形参的数量和传给`array_map()`数组数量，两者必须一样。
 
@@ -218,7 +218,7 @@ Array
 
 ## array_multisort
 
-> bool array_multisort ( array &$arr [, mixed $arg = SORT_ASC [, mixed $arg = SORT_REGULAR [, mixed $... ]]] )
+> `bool array_multisort ( array &\$arr [, mixed \$arg = SORT_ASC [, mixed \$arg = SORT_REGULAR [, mixed \$... ]]] )`
 
 对多个数组或多维数组进行排序。
 但是值得注意的是，当给出多个数组的时候，并不是对每个数组分别排序（很容易产生这种误导）。而是对第一个数组排序，后边的数组的每个值和第一个保持一致调整。
@@ -264,7 +264,7 @@ array(4) {
 
 ## array_reduce
 
-> mixed array_reduce ( array $input , callable $function [, mixed $initial = NULL ] )
+> `mixed array_reduce ( array \$input , callable \$function [, mixed \$initial = NULL ] )`
 
 用回调函数迭代地将数组简化为单一的值。`array_reduce()`将回调函数`function`迭代地作用到`input`数组中的每一个单元中，从而将数组简化为单一的值。
 看实例和测试后，发现这里的回调函数需要有两个参数，这样才能实现将数组归并为一个值，
@@ -331,7 +331,7 @@ outout:
 
 ## array_walk
 
-> bool array_walk ( array &$array , callable $callback [, mixed $userdata = NULL ] )
+> `bool array_walk ( array &\$array , callable \$callback [, mixed \$userdata = NULL ] )`
 
 使用用户自定义函数对数组中的每个元素做回调处理。典型情况下`callback`接受两个参数:`array`参数的值作为第一个，键名作为第二个。
 如果提供了可选参数`userdata`，将被作为第三个参数传递给回调函数。
@@ -386,7 +386,7 @@ c. fruit: apple
 
 ## compact
 
-> array compact ( mixed $varname [, mixed $... ] )
+> `array compact ( mixed \$varname [, mixed \$... ] )`
 
 创建一个数组，数组的键值为传入参数的名称，对应的值为参数对应变量的值。和`extract()`正好相反。
 会自动忽略找不到变量的参数。官方实例如下：
@@ -415,7 +415,7 @@ Array
 
 ## count
 
-> int count ( mixed $var [, int $mode = COUNT_NORMAL ] )
+> `int count ( mixed \$var [, int \$mode = COUNT_NORMAL ] )`
 
 这个函数应该很常用，这里主要讲下`mode`参数的用法：
 
@@ -446,7 +446,7 @@ output:
 
 ## extract
 
-> int extract ( array &$var_array [, int $extract_type = EXTR_OVERWRITE [, string $prefix = NULL ]] )
+> `int extract ( array &\$var_array [, int \$extract_type = EXTR_OVERWRITE [, string \$prefix = NULL ]] )`
 
 从数组中将变量导入到当前的符号表,这里的符号表为当前环境的变量集合。这里的`extract_type`可取值请参考：[extract_type](http://php.net/manual/zh/function.extract.php#refsect1-function.extract-parameters "跳转")。
 `extract`会检查每个键名看是否可以作为一个合法的变量名，同时也检查和符号表中已有的变量名的冲突。返回值为成功导入到符号表中的变量数目。
@@ -470,7 +470,7 @@ blue, large, sphere, medium
 
 ## list
 
-> array list ( mixed $varname [, mixed $... ] )
+> `array list ( mixed \$varname [, mixed \$... ] )`
 
 把数组中的值赋给一些变量。像`array()`一样，这不是真正的函数，而是语言结构。`list()`用一步操作给一组变量进行赋值。
 
