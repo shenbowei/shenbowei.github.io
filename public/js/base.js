@@ -64,7 +64,7 @@ $(document).ready(function() {
       $('#nav_btn').click();
     $('.aside3').scrollTop(0);
     contentEffects();
-	pajx_loadDuodsuo();
+	//pajx_loadDuodsuo();
 	//pajx_loadMathjax();
 	//下行实现mathjax加载
 	MathJax.Hub.Typeset();
@@ -106,6 +106,7 @@ function contentEffects(){
 }
 
 //多说加载
+/*
 function pajx_loadDuodsuo(){
 	var dus=$(".ds-thread");
 	if($(dus).length==1){
@@ -116,6 +117,8 @@ function pajx_loadDuodsuo(){
 		$(dus).html(el);
 	}
 }
+*/
+
 //mathjax加载
 function pajx_loadMathjax(){
 	var script = document.createElement("script");

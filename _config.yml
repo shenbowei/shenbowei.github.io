@@ -21,7 +21,7 @@ author:
 # 站点信息
 title: 知其然知其所以然
 description: My personal blog
-url: https://shenbowei.github.io
+url: https://blog.shenbowei.tech
 rss_url: /pages/atom.xml
 
 # gavatar头像及Favicon
@@ -46,4 +46,9 @@ locals:
   about: 关于
   newest: 最新文章
   archive: 归档
+  
+# comment
+home: http://shenbowei.github.io
+api: http://api.shenbowei.tech/myapi
+img: http://blog.shenbowei.tech/public/img/emoji
   
