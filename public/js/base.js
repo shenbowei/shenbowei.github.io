@@ -65,6 +65,7 @@ $(document).ready(function() {
     $('.aside3').scrollTop(0);
     contentEffects();
 	//pajx_loadDuodsuo();
+	pjax_loadComment();
 	//pajx_loadMathjax();
 	//下行实现mathjax加载
 	MathJax.Hub.Typeset();
@@ -118,6 +119,11 @@ function pajx_loadDuodsuo(){
 	}
 }
 */
+
+function pjax_loadComment(){
+	var guest = new Guest();
+	var comment =  new Comment();
+}
 
 //mathjax加载
 function pajx_loadMathjax(){
