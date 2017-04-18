@@ -121,8 +121,9 @@ function pajx_loadDuodsuo(){
 */
 
 function pjax_loadComment(){
-	var guest = new Guest();
-	var comment =  new Comment();
+	//timeAgo();
+	guest = new Guest();
+	comment =  new Comment();
 }
 
 //mathjax加载

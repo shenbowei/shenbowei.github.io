@@ -162,7 +162,7 @@ Guest.prototype = {
 
 
 function Comment () {
-	console.log("In function Comment");
+	//console.log("In function Comment");
 	var head = document.getElementsByTagName('head')[0],
 	site = {
 		home: head.dataset.home,
@@ -177,7 +177,7 @@ function Comment () {
 		mobile: !!ua.match(/AppleWebKit.*Mobile.*/),
 		wechat: ua.toLowerCase().match(/MicroMessenger/i) == 'micromessenger'
 	};
-	console.log(page.url);
+	//console.log(page.url);
     this.imagesize = [];
     this.hasBox = !!document.querySelector('.comment-box');
     this.box = this.hasBox ? document.querySelector('.comment-box').outerHTML : '';
@@ -209,6 +209,8 @@ Comment.prototype = {
 
         // 拉取列表
         if(this.hasBox){
+			//console.log("get comment list");
+			//console.log(this.box);
             this.getlist();
         }
     },
@@ -562,6 +564,7 @@ Comment.prototype = {
             }
         }
         xhrListPosts.onload = function(){
+			//console.log("in xhrListPosts.onload");
             comment.form();
         }
 
@@ -584,7 +587,8 @@ Comment.prototype = {
         var parentId = item.dataset.id;
         var parentName = item.dataset.name;
         var commentBox = comment.box.replace(/emoji-input/g,'emoji-input-'+parentId).replace(/upload-input/g,'upload-input-'+parentId).replace(/加入讨论……|写条留言……/,'@'+parentName).replace(/加入讨论……|写条留言……/,'').replace(/<label class="comment-actions-label exit"(.|\n)*<\/label>\n/,'').replace(/<input id="tips-input"(.|\n)*<\/label>\n/,'');
-        item.querySelector('.comment-item-main .comment-item-children').insertAdjacentHTML('beforebegin', commentBox);
+        //console.log(comment);
+		item.querySelector('.comment-item-main .comment-item-children').insertAdjacentHTML('beforebegin', commentBox);
         $this.outerHTML = $this.outerHTML.replace('reply','cancel');
         guest.init();
 
