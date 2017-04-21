@@ -506,7 +506,7 @@ Comment.prototype = {
 
         post.message = post.message.replace(/(.{3})/, '$1'+parent.name);
         comment.emoji.forEach(function(item,i){
-            post.message = post.message.replace(item.code, '<img class="emojione" src="' + item.url + '" />');
+            post.message = post.message.replace(eval("/"+item.code+"/g"), '<img class="emojione" src="' + item.url + '" />');
         });
 
         var imageArr = post.media;
