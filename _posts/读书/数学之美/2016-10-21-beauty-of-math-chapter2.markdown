@@ -6,7 +6,7 @@ author: shenbowei
 tags: 数学之美
 ---
 
-**keyword**：`自然语言 数学模型 统计`
+**keyword**：`自然语言`,`数学模型`,`统计`
 
 ```
 从规则到统计
