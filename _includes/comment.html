@@ -31,7 +31,7 @@
                         <input id="tips-input" class="comment-actions-input" type="checkbox"/>
                         <label class="comment-actions-label tips" title="提示" for="tips-input">{% include svg/tips.svg %}
                             <div class="comment-tips">
-                                本评论框利用Disqus API实现，若发现问题烦请<a href="mailto:{{ site.author.email }}">联系我</a>，感谢！
+                                本评论框利用<a target="_blank" title="{{ page.title }}" class="comment-tips-link">Disqus</a> API实现，若发现问题烦请<a href="mailto:{{ site.author.email }}">联系我</a>，感谢！
                             </div>
                         </label>
                         <label class="comment-actions-label exit" title="重置访客信息">{% include svg/exit.svg %}</label>
